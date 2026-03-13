@@ -19,7 +19,7 @@ CONFIGURAÇÃO (edite a seção abaixo):
 # ─────────────────────────────────────────────
 
 # Caminho da planilha Excel
-EXCEL_PATH = "AREAS_LAND_BANK.xlsx"
+EXCEL_PATH = "areas_land_bank_com_id.xlsx"
 
 # Nome da aba/sheet da planilha (None = primeira aba)
 EXCEL_SHEET = None
