@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Land Bank — Grupo Brasil Terrenos</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Mobile overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="./logo_brasil_terrenos.png" alt="Logo" class="sidebar-logo">
+      <div class="title-group">
+        <h1>Land Bank</h1>
+        <div class="subtitle">Banco de Terrenos</div>
+      </div>
+      <button class="sidebar-toggle" id="sidebarClose" aria-label="Fechar menu">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Buscar terreno, cidade ou regional...">
+    </div>
+    <div class="filters">
+      <h3>Regionais</h3>
+      <div class="filter-chips" id="filterChips"></div>
+    </div>
+    <div class="counter" id="counter"></div>
+    <div class="list-container" id="listContainer"></div>
+  </div>
+
+  <!-- Map area -->
+  <div class="map-wrap">
+    <!-- Mobile menu button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      Terrenos
+    </button>
+
+    <!-- Layer control panel -->
+    <div class="layer-panel" id="layerPanel">
+      <div class="layer-panel-header" id="layerToggle">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        Camadas do Mapa
+        <span id="chevron" style="margin-left:auto;font-size:10px;color:var(--text2)">&#9660;</span>
+      </div>
+      <div class="layer-panel-body" id="layerBody">
+        <label class="layer-option">
+          <input type="checkbox" id="layerStreets" checked>
+          <span class="layer-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7z"/><path d="M9 4v13M15 7v13"/>
+            </svg>
+          </span>
+          <div><div>Mapa Base (Ruas)</div><div class="layer-desc">OpenStreetMap padrão</div></div>
+        </label>
+        <label class="layer-option">
+          <input type="checkbox" id="layerSatellite">
+          <span class="layer-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+          </span>
+          <div><div>Satélite</div><div class="layer-desc">Imagem aérea Esri</div></div>
+        </label>
+        <label class="layer-option">
+          <input type="checkbox" id="layerTerrain">
+          <span class="layer-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 20l4.5-9 4.5 5 3.5-5 5 9H3z"/>
+            </svg>
+          </span>
+          <div><div>Relevo / Topografia</div><div class="layer-desc">Elevação e curvas de nível</div></div>
+        </label>
+        <label class="layer-option">
+          <input type="checkbox" id="layerVegetation">
+          <span class="layer-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22V12"/><path d="M12 12C12 12 7 9 7 5a5 5 0 0 1 10 0c0 4-5 7-5 7z"/><path d="M12 16c0 0-4-2-4-5"/><path d="M12 16c0 0 4-2 4-5"/>
+            </svg>
+          </span>
+          <div><div>Cobertura Vegetal</div><div class="layer-desc">Florestas, rios, lagos</div></div>
+        </label>
+      </div>
+    </div>
+
+
+
+    <div id="map"></div>
+
+      <div class="map-footer">
+        Desenvolvido pelo <strong>Centro de Inteligência e Dados - Brasil Terrenos</strong> · 
+        Encontrou alguma divergência? 
+        <a href="mailto:controladoria@btsa.com.br">Entre em contato com a área</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Scripts: data first, then app logic -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
