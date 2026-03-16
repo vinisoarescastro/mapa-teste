@@ -10,7 +10,16 @@ let somenteVinculados = false;
 
 // ===== HELPERS =====
 const fmtNum = (n) => n ? n.toLocaleString('pt-BR') : '-';
-const fmtBRL  = (n) => n ? 'R$ ' + n.toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0}) + ' mi' : '-';
+const fmtBRL  = (n) => {
+  if (!n) return '-';
+  // Os valores vêm da planilha já em milhões (mm).
+  // A partir de 1000 mm converte para bilhões para exibição.
+  if (Math.abs(n) >= 1000) {
+    const bi = n / 1000;
+    return 'R$ ' + bi.toLocaleString('pt-BR', {minimumFractionDigits: bi % 1 === 0 ? 0 : 2, maximumFractionDigits: 2}) + ' bi';
+  }
+  return 'R$ ' + n.toLocaleString('pt-BR', {minimumFractionDigits: n % 1 === 0 ? 0 : 1, maximumFractionDigits: 1}) + ' mi';
+};
 const fmtArea = (n) => n ? (n / 10000).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0}) + ' ha' : '-';
 
 function isLinked(item) {
