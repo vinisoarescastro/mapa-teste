@@ -171,6 +171,7 @@ allChip.onclick = () => {
 };
 chipsEl.appendChild(allChip);
 
+/* 
 const vinculadosChip = document.createElement('div');
 vinculadosChip.className = 'chip';
 vinculadosChip.innerHTML = `<span class="dot" style="background:#27a06a"></span>Vinculados`;
@@ -180,6 +181,7 @@ vinculadosChip.onclick = () => {
   updateMap();
 };
 chipsEl.appendChild(vinculadosChip);
+*/
 
 allRegionals.forEach(r => {
   const chip = document.createElement('div');
@@ -223,8 +225,8 @@ function popupContent(item) {
   return `
     <div class="popup-header">
       ${e.regional ? `<div class="popup-regional-badge" style="background:${regionalColor}">${e.regional}</div>` : ''}
-      <div class="popup-title">${e.empreendimento || e.nome || item.n}</div>
       ${e.cidade ? `<div class="popup-city">${e.cidade}</div>` : ''}
+      <div class="popup-title">Empreendimento:<br> ${e.empreendimento || e.nome || item.n}</div>
     </div>
     <div class="popup-body">
       <div class="popup-grid">
@@ -449,8 +451,8 @@ function updateMap() {
     listEl.appendChild(div);
   });
 
-  document.getElementById('counter').textContent =
-    visibleCount + ' de ' + items.length + ' terrenos';
+  // document.getElementById('counter').textContent = visibleCount + ' de ' + items.length + ' terrenos';
+  document.getElementById('counter').textContent = `Lista de empreendimentos:`;
 
   buildOverviewMarkers();
   setTimeout(applyZoomVisibility, 0);
