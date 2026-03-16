@@ -1,12 +1,126 @@
-/* ===== RESET & VARIABLES ===== */
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#f5f6f8;--surface:#ffffff;--surface2:#e5e6e7;--surface3:#f5f5f5;--border:#dfe1e6;
-  --text:#1a1d26;--text2:#6b7280;--accent:#2563eb;--accent2:#059669;
-}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;height:100dvh;overflow:hidden;display:flex}
+/* ============================================================
+   LAND BANK — Grupo Brasil Terrenos
+   styles.css
 
-/* ===== SIDEBAR ===== */
+   ESTRUTURA:
+     1. TOKENS DE TEMA (cores, fontes, sombras, z-index, transições)
+     2. RESET & BASE
+     3. LAYOUT PRINCIPAL
+     4. SIDEBAR
+     5. STATS
+     6. FILTROS & CHIPS
+     7. BUSCA
+     8. LISTA DE TERRENOS
+     9. POPUP
+    10. PAINEL DE CAMADAS
+    11. BOTÃO MENU MOBILE & OVERLAY
+    12. OVERVIEW MARKERS & TOOLTIP
+    13. RODAPÉ DO MAPA
+    14. RESPONSIVO — TABLET  (≤ 900px)
+    15. RESPONSIVO — MOBILE  (≤ 768px)
+    16. RESPONSIVO — TELAS MUITO PEQUENAS (≤ 380px)
+   ============================================================ */
+
+
+/* ============================================================
+   1. TOKENS DE TEMA
+   Cores, famílias tipográficas, sombras, transições e z-index.
+   Tamanhos de fonte, espaçamentos e dimensões estruturais são
+   escritos diretamente nos componentes como valores literais.
+   ============================================================ */
+:root {
+
+  /* ── Superfícies ── */
+  --bg:       #f5f6f8;
+  --surface:  #ffffff;
+  --surface2: #e5e6e7;
+  --surface3: #f5f5f5;
+
+  /* ── Bordas ── */
+  --border:       #dfe1e6;
+  --border-hover: #b0b5c0;
+
+  /* ── Texto ── */
+  --text:  #1a1d26;
+  --text2: #6b7280;
+
+  /* ── Cores de destaque ── */
+  --accent:  #2563eb;
+  --accent2: #059669;
+
+  /* ── Accent com opacidade ── */
+  --accent-subtle: rgba(37, 99, 235, 0.06);
+  --accent-muted:  rgba(37, 99, 235, 0.08);
+  --accent-ring:   0 0 0 3px rgba(37, 99, 235, 0.12);
+
+  /* ── Marcadores sem vínculo ── */
+  --color-unlinked: #94a3b8;
+
+  /* ── Famílias tipográficas ── */
+  --font-sans: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* ── Sombras ── */
+  --shadow-sm:  0 1px 3px  rgba(0, 0, 0, 0.08);
+  --shadow-md:  0 4px 12px rgba(0, 0, 0, 0.10);
+  --shadow-lg:  0 4px 20px rgba(0, 0, 0, 0.12);
+  --shadow-xl:  0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-pin:       drop-shadow(0 0 0 2px white) drop-shadow(0 3px  6px rgba(0,0,0,0.35));
+  --shadow-pin-hover: drop-shadow(0 0 0 2px white) drop-shadow(0 6px 12px rgba(0,0,0,0.40));
+
+  /* ── Transições ── */
+  --transition-fast:   0.15s ease;
+  --transition-normal: 0.20s ease;
+  --transition-drawer: 0.30s ease;
+
+  /* ── Z-Index — hierarquia declarada num só lugar ── */
+  --z-footer:      1000;
+  --z-layer-panel: 1000;
+  --z-sidebar:     1000;
+  --z-mobile-btn:  1001;
+  --z-overlay:     1099;
+  --z-drawer:      1100;
+}
+
+
+/* ============================================================
+   2. RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+}
+
+
+/* ============================================================
+   3. LAYOUT PRINCIPAL
+   ============================================================ */
+.map-wrap {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+
+/* ============================================================
+   4. SIDEBAR
+   ============================================================ */
 .sidebar {
   width: 380px;
   height: 100vh;
@@ -15,10 +129,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  z-index: 1000;
+  z-index: var(--z-sidebar);
   flex-shrink: 0;
-  box-shadow: 2px 0 12px rgba(0,0,0,.05);
-  transition: transform .3s ease;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.05);
+  transition: transform var(--transition-drawer);
   overflow-y: auto;
 }
 
@@ -28,148 +142,473 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   object-fit: contain;
   flex-shrink: 0;
 }
-.sidebar-header{
-  padding:20px 24px 16px;
-  border-bottom:1px solid var(--border);
-  background:linear-gradient(135deg,#e4e4e4,#eef2ff);
-  display:flex;
-  align-items:center;
-  justify-content:space-between
+
+.sidebar-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, #f5f1e6, #ffffff);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-.sidebar-header .title-group{}
-.sidebar-header h1{
-  font-size:18px;
-  font-weight:700;
-  letter-spacing:-.3px;
-  color:var(--text)
+
+.sidebar-header h1 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text);
 }
-.sidebar-header .subtitle{font-size:12px;color:var(--text2);margin-top:4px;font-weight:500;text-transform:uppercase;letter-spacing:.8px}
 
-.sidebar-toggle{display:none;background:none;border:none;padding:6px;cursor:pointer;color:var(--text2);border-radius:6px;transition:background .15s}
-.sidebar-toggle:hover{background:var(--surface2)}
-.sidebar-toggle svg{width:20px;height:20px;display:block}
+.sidebar-header .subtitle {
+  font-size: 12px;
+  color: var(--text2);
+  margin-top: 4px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
 
-/* ===== STATS ===== */
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:16px 24px;border-bottom:1px solid var(--border)}
-.stat-card{background:var(--surface2);border-radius:10px;padding:12px;border:1px solid var(--border)}
-.stat-card .val{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--accent)}
-.stat-card .val.green{color:var(--accent2)}
-.stat-card .label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-top:2px}
+.sidebar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--text2);
+  border-radius: 6px;
+  transition: background var(--transition-fast);
+}
 
-/* ===== FILTERS ===== */
-.filters{padding:16px 24px;border-bottom:1px solid var(--border)}
-.filters h3{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin-bottom:10px;font-weight:600}
-.filter-chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--text2);transition:all .2s;user-select:none}
-.chip:hover{border-color:#b0b5c0}
-.chip.active{border-color:var(--accent);color:var(--accent);background:rgba(37,99,235,.06)}
-.chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.sidebar-toggle:hover { background: var(--surface2); }
 
-/* ===== LIST ===== */
-.list-container{overflow-y:visible;padding:8px 12px;-webkit-overflow-scrolling:touch}
-.list-container::-webkit-scrollbar{width:4px}
-.list-container::-webkit-scrollbar-track{background:transparent}
-.list-container::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-.list-item{background:var(--surface3);padding:12px;border-radius:20px;cursor:pointer;transition:all .15s;border:1px solid transparent;margin-bottom:8px}
-.list-item:hover{background:var(--surface2);border-color:var(--border)}
-.list-item:active{background:rgba(37,99,235,.08)}
-.list-item.highlight{background:rgba(37,99,235,.06);border-color:var(--accent)}
-.list-item .name{display:block;width:100%;font-size:13px;font-weight:400;line-height:1.3;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text2)}
-.list-item .meta{font-size:11px;font-weight:1000;color:var(--text);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.list-item .meta .regional-tag{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;color:#fff}
-.list-item .meta span{white-space:nowrap}
-.no-match{font-size:10px;color:var(--text2);opacity:.5;font-style:italic}
+.sidebar-toggle svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
 
-/* ===== SEARCH ===== */
-.search-box{padding:12px 24px;border-bottom:1px solid var(--border)}
-.search-box input{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s;-webkit-appearance:none}
-.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
-.search-box input::placeholder{color:var(--text2)}
 
-/* ===== MAP ===== */
-.map-wrap{flex:1;position:relative;min-height:0}
-#map{width:100%;height:100%}
+/* ============================================================
+   5. STATS
+   ============================================================ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
 
-/* ===== MAP FOOTER ===== */
-.map-footer{position:absolute;bottom:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);border-top:1px solid var(--border);padding:7px 16px;font-size:11px;color:var(--text2);text-align:center;line-height:1.5}
-.map-footer strong{color:var(--text);font-weight:600}
-.map-footer a{color:var(--accent);text-decoration:none;font-weight:500}
-.map-footer a:hover{text-decoration:underline}
+.stat-card {
+  padding: 10px 24px;
+  border-right: 1px solid var(--border);   /* divisória entre colunas */
+  border-bottom: 1px solid var(--border);  /* divisória entre linhas */
+}
 
-/* ===== POPUP ===== */
-.leaflet-popup-content-wrapper{background:#fff!important;color:var(--text)!important;border-radius:12px!important;border:1px solid var(--border)!important;box-shadow:0 8px 32px rgba(0,0,0,.12)!important}
-.leaflet-popup-tip{background:#fff!important;border:1px solid var(--border)!important}
-.leaflet-popup-content{margin:14px 16px!important;font-family:'DM Sans',sans-serif!important}
-.popup-title{font-size:14px;font-weight:700;margin-bottom:8px;line-height:1.3;color:var(--text)}
-.popup-city{font-size:11px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
-.popup-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
-.popup-grid .pg-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px}
-.popup-grid .pg-val{font-size:13px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--text)}
-.popup-nodata{font-size:12px;color:var(--text2);font-style:italic}
+.stat-card:nth-child(even) {
+  border-right: none;
+}
 
-/* ===== LAYER PANEL ===== */
-.layer-panel{position:absolute;top:12px;left:12px;z-index:1000;background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.12);border:1px solid var(--border);overflow:hidden;min-width:220px}
-.layer-panel-header{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;color:var(--text)}
-.layer-panel-header svg{width:16px;height:16px;color:var(--text2);flex-shrink:0}
-.layer-panel-body{padding:8px 12px}
-.layer-panel-body.collapsed{display:none}
-.layer-option{display:flex;align-items:center;gap:10px;padding:8px 6px;border-radius:8px;cursor:pointer;transition:background .15s;font-size:12px;font-weight:500;color:var(--text)}
-.layer-option:hover{background:var(--surface2)}
-.layer-option input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px;cursor:pointer;flex-shrink:0}
-.layer-option .layer-desc{font-size:10px;color:var(--text2);margin-top:1px}
-.layer-option .layer-icon{width:20px;height:20px;flex-shrink:0;color:var(--text2);display:flex;align-items:center;justify-content:center}
-.layer-option .layer-icon svg{width:18px;height:18px}
+.stat-card-full {
+  grid-column: 1 / -1;
+  border-right: none;
+  padding: 12px 24px 14px;
+  border-bottom: 1px solid var(--border);
+}
 
-.counter{font-size:11px;color:var(--text2);padding:4px 24px 8px;font-family:'JetBrains Mono',monospace}
+.stat-card .val {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--accent);
+}
 
-/* ===== MOBILE MENU BUTTON ===== */
-.mobile-menu-btn{display:none;position:absolute;top:12px;right:12px;z-index:1001;background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.1);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text);gap:6px;align-items:center}
-.mobile-menu-btn svg{width:18px;height:18px}
+.stat-card .val.green { color: var(--accent2); }
 
-/* ===== MOBILE OVERLAY ===== */
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:999}
+.stat-card .label {
+  font-size: 10px;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-top: 2px;
+}
 
-/* ═══════════════════════════════════════════════════════════════
-   OVERVIEW MARKERS — pinos de visão geral (zoom afastado)
-   ═══════════════════════════════════════════════════════════════ */
 
-/*
-  O Leaflet renderiza o ícone dentro de um <div class="leaflet-marker-icon">.
-  Como passamos className:'' para o L.divIcon, não há classe extra interferindo.
-  O HTML gerado é: <div class="ov-pin" style="--pin-color: #c0392b"></div>
-*/
+/* ============================================================
+   6. FILTROS & CHIPS
+   ============================================================ */
+.filters {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.filters h3 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text2);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text2);
+  transition: all var(--transition-normal);
+  user-select: none;
+}
+
+.chip:hover { border-color: var(--border-hover); }
+
+.chip.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.chip .dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.counter {
+  font-size: 11px;
+  color: var(--text2);
+  padding: 4px 24px 8px;
+  font-family: var(--font-mono);
+}
+
+
+/* ============================================================
+   7. BUSCA
+   ============================================================ */
+.search-box {
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  outline: none;
+  transition: border-color var(--transition-normal);
+  -webkit-appearance: none;
+}
+
+.search-box input:focus {
+  border-color: var(--accent);
+  box-shadow: var(--accent-ring);
+}
+
+.search-box input::placeholder { color: var(--text2); }
+
+
+/* ============================================================
+   8. LISTA DE TERRENOS
+   ============================================================ */
+.list-container {
+  overflow-y: visible;
+  padding: 8px 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.list-container::-webkit-scrollbar { width: 4px; }
+.list-container::-webkit-scrollbar-track { background: transparent; }
+.list-container::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.list-item {
+  background: var(--surface3);
+  padding: 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+  margin-bottom: 8px;
+}
+
+.list-item:hover {
+  background: var(--surface2);
+  border-color: var(--border);
+}
+
+.list-item:active { background: var(--accent-muted); }
+
+.list-item.highlight {
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+}
+
+.list-item .name {
+  display: block;
+  width: 100%;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.3;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text2);
+}
+
+.list-item .meta {
+  font-size: 11px;
+  font-weight: 1000;
+  color: var(--text);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.list-item .meta .regional-tag {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.list-item .meta span { white-space: nowrap; }
+
+.no-match {
+  font-size: 10px;
+  color: var(--text2);
+  opacity: 0.5;
+  font-style: italic;
+}
+
+
+/* ============================================================
+   9. POPUP
+   ============================================================ */
+.leaflet-popup-content-wrapper {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+.leaflet-popup-tip {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.leaflet-popup-content {
+  margin: 14px 16px !important;
+  font-family: var(--font-sans) !important;
+}
+
+.popup-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.popup-city {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.popup-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 16px;
+}
+
+.popup-grid .pg-label {
+  font-size: 10px;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.popup-grid .pg-val {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--text);
+}
+
+.popup-nodata {
+  font-size: 12px;
+  color: var(--text2);
+  font-style: italic;
+}
+
+
+/* ============================================================
+   10. PAINEL DE CAMADAS
+   ============================================================ */
+.layer-panel {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: var(--z-layer-panel);
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  min-width: 220px;
+}
+
+.layer-panel-header {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  color: var(--text);
+}
+
+.layer-panel-header svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text2);
+  flex-shrink: 0;
+}
+
+.layer-panel-body { padding: 8px 12px; }
+.layer-panel-body.collapsed { display: none; }
+
+.layer-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.layer-option:hover { background: var(--surface2); }
+
+.layer-option input[type=checkbox] {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.layer-option .layer-desc {
+  font-size: 10px;
+  color: var(--text2);
+  margin-top: 1px;
+}
+
+.layer-option .layer-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.layer-option .layer-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+
+/* ============================================================
+   11. BOTÃO MENU MOBILE & OVERLAY
+   ============================================================ */
+.mobile-menu-btn {
+  display: none;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: var(--z-mobile-btn);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  gap: 6px;
+  align-items: center;
+}
+
+.mobile-menu-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: var(--z-overlay);
+}
+
+
+/* ============================================================
+   12. OVERVIEW MARKERS — pinos de visão geral (zoom afastado)
+   ============================================================ */
 .ov-pin {
-  /* Dimensões do pino */
   width: 15px;
   height: 22px;
   position: relative;
   cursor: pointer;
-
-  /* Forma do pino via clip-path: retângulo na parte superior + ponta triangular abaixo */
-  background: var(--pin-color, #7f8c8d);
+  background: var(--pin-color, var(--color-unlinked));
   border-radius: 12px 12px 4px 4px;
-  clip-path: polygon(
-    0% 0%,       /* canto superior esquerdo */
-    100% 0%,     /* canto superior direito */
-    100% 62%,    /* lado direito antes da ponta */
-    50% 100%,    /* ponta inferior */
-    0% 62%       /* lado esquerdo antes da ponta */
-  );
-
-  /* Borda branca simulada com box-shadow (clip-path corta outline/border) */
-  filter: drop-shadow(0 0 0 2px white) drop-shadow(0 3px 6px rgba(0,0,0,0.35));
-
-  /* Círculo branco interno (indicador) */
+  clip-path: polygon(0% 0%, 100% 0%, 100% 62%, 50% 100%, 0% 62%);
+  filter: var(--shadow-pin);
   display: flex;
   align-items: center;
   justify-content: center;
-
-  /* Animação de entrada */
   animation: ovPinIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  transition: transform 0.15s ease, filter 0.15s ease;
+  transition: transform var(--transition-fast), filter var(--transition-fast);
 }
 
-/* Círculo branco interno */
 .ov-pin::after {
   content: '';
   width: 6px;
@@ -182,59 +621,51 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   transform: translateX(-50%);
 }
 
-/* Hover: leve crescimento e brilho */
 .ov-pin:hover,
 .leaflet-marker-icon:hover .ov-pin {
   transform: scale(1.18) translateY(-3px);
-  filter: drop-shadow(0 0 0 2px white) drop-shadow(0 6px 12px rgba(0,0,0,0.4));
+  filter: var(--shadow-pin-hover);
 }
 
-/* Animação de entrada com leve bounce */
 @keyframes ovPinIn {
   0%   { opacity: 0; transform: scale(0.5) translateY(10px); }
-  100% { opacity: 1; transform: scale(1)   translateY(0);    }
+  100% { opacity: 1; transform: scale(1)   translateY(0); }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   OVERVIEW TOOLTIP — card flutuante ao passar o mouse no pino
-   ═══════════════════════════════════════════════════════════════ */
-
-/* Remove todos os estilos do tooltip padrão do Leaflet */
+/* ── Overview Tooltip ── */
 .ov-tooltip-outer.leaflet-tooltip {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
   padding: 0 !important;
-  /* Remove a seta triangular */
   margin: 0 !important;
 }
+
 .ov-tooltip-outer.leaflet-tooltip::before,
 .ov-tooltip-outer.leaflet-tooltip-top::before {
   display: none !important;
 }
 
-/* Card estilizado */
 .ov-tooltip {
-  background: #ffffff;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-lg), var(--shadow-sm);
   padding: 10px 13px;
   display: flex;
   flex-direction: column;
   gap: 4px;
   min-width: 155px;
   max-width: 220px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans);
   animation: ovTooltipIn 0.14s ease-out both;
 }
 
 @keyframes ovTooltipIn {
   from { opacity: 0; transform: translateY(5px); }
-  to   { opacity: 1; transform: translateY(0);   }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Badge colorido da regional */
 .ov-tag {
   display: inline-block;
   align-self: flex-start;
@@ -248,7 +679,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   margin-bottom: 1px;
 }
 
-/* Nome do empreendimento */
 .ov-tooltip strong {
   font-size: 12px;
   font-weight: 700;
@@ -256,21 +686,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   line-height: 1.35;
 }
 
-/* Cidade */
-.ov-city {
-  font-size: 11px;
-  color: var(--text2);
-}
+.ov-city  { font-size: 11px; color: var(--text2); }
 
-/* Unidades */
 .ov-units {
   font-size: 11px;
   font-weight: 600;
   color: var(--accent2);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
 }
 
-/* Hint de clique */
 .ov-hint {
   font-size: 10px;
   color: var(--accent);
@@ -279,58 +703,101 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   opacity: 0.85;
 }
 
-/* ===== RESPONSIVE — TABLET ===== */
-@media(max-width:900px){
-  .sidebar{width:320px}
-  .stat-card .val{font-size:17px}
+
+/* ============================================================
+   13. RODAPÉ DO MAPA
+   ============================================================ */
+.map-footer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: var(--z-footer);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border-top: 1px solid var(--border);
+  padding: 7px 16px;
+  font-size: 11px;
+  color: var(--text2);
+  text-align: center;
+  line-height: 1.5;
 }
 
-/* ===== RESPONSIVE — MOBILE ===== */
-@media(max-width:768px){
-  body{flex-direction:column;position:relative}
+.map-footer strong {
+  color: var(--text);
+  font-weight: 600;
+}
 
-  .sidebar{
-    position:fixed;top:0;left:0;bottom:0;
-    width:85vw;max-width:360px;
-    height:100vh;height:100dvh;
-    transform:translateX(-100%);
-    z-index:1100;
-    box-shadow:4px 0 24px rgba(0,0,0,.15);
+.map-footer a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.map-footer a:hover { text-decoration: underline; }
+
+
+/* ============================================================
+   14. RESPONSIVO — TABLET  (≤ 900px)
+   ============================================================ */
+@media (max-width: 900px) {
+  .sidebar { width: 320px; }
+  .stat-card .val { font-size: 17px; }
+}
+
+
+/* ============================================================
+   15. RESPONSIVO — MOBILE  (≤ 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+  body { flex-direction: column; position: relative; }
+
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 85vw;
+    max-width: 360px;
+    height: 100vh;
+    height: 100dvh;
+    transform: translateX(-100%);
+    z-index: var(--z-drawer);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
   }
-  .sidebar.open{transform:translateX(0)}
-  .sidebar-overlay.visible{display:block;z-index:1099}
-  .sidebar-toggle{display:block}
 
-  .map-wrap{width:100%;height:100vh;height:100dvh}
-  .mobile-menu-btn{display:flex}
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.visible { display: block; }
+  .sidebar-toggle { display: block; }
 
-  .layer-panel{top:8px;left:8px;min-width:180px;max-width:calc(100vw - 80px)}
-  .layer-panel-header{padding:10px 12px;font-size:12px}
-  .layer-option{padding:6px 4px;font-size:11px}
+  .map-wrap { width: 100%; height: 100vh; height: 100dvh; }
+  .mobile-menu-btn { display: flex; }
 
-  .leaflet-popup-content-wrapper{max-width:85vw!important}
-  .popup-grid{gap:4px 10px}
-  .popup-grid .pg-val{font-size:12px}
+  .layer-panel { top: 8px; left: 8px; min-width: 180px; max-width: calc(100vw - 80px); }
+  .layer-panel-header { padding: 10px 12px; font-size: 12px; }
+  .layer-option { padding: 6px 4px; font-size: 11px; }
 
-  .search-box input{padding:12px;font-size:15px}
+  .leaflet-popup-content-wrapper { max-width: 85vw !important; }
+  .popup-grid { gap: 4px 10px; }
+  .popup-grid .pg-val { font-size: 12px; }
 
-  .stat-card .val{font-size:16px}
-  .stat-card .label{font-size:9px}
-  .stats-grid{gap:6px;padding:12px 16px}
+  .search-box input { padding: 12px; font-size: 15px; }
 
-  .filters{padding:12px 16px}
-  .search-box{padding:10px 16px}
-  .counter{padding:4px 16px 6px}
-  .list-container{padding:6px 8px}
+  .stat-card .val { font-size: 16px; }
+  .stat-card .label { font-size: 9px; }
+  .stats-grid { gap: 6px; padding: 12px 16px; }
 
-  /* Tooltip menor em telas pequenas */
-  .ov-tooltip{min-width:130px;max-width:185px;padding:8px 10px;gap:3px}
-  .ov-tooltip strong{font-size:11px}
+  .filters     { padding: 12px 16px; }
+  .search-box  { padding: 10px 16px; }
+  .counter     { padding: 4px 16px 6px; }
+  .list-container { padding: 6px 8px; }
+
+  .ov-tooltip { min-width: 130px; max-width: 185px; padding: 8px 10px; gap: 3px; }
+  .ov-tooltip strong { font-size: 11px; }
 }
 
-/* ===== VERY SMALL SCREENS ===== */
-@media(max-width:380px){
-  .sidebar{width:92vw;max-width:none}
-  .stat-card .val{font-size:14px}
-  .chip{padding:4px 10px;font-size:10px}
+
+/* ============================================================
+   16. RESPONSIVO — TELAS MUITO PEQUENAS  (≤ 380px)
+   ============================================================ */
+@media (max-width: 380px) {
+  .sidebar { width: 92vw; max-width: none; }
+  .stat-card .val { font-size: 14px; }
+  .chip { padding: 4px 10px; font-size: 10px; }
 }
