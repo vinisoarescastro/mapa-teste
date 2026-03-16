@@ -160,7 +160,7 @@ body {
 
 /* ── Header ── */
 .sidebar-logo {
-  height: 36px;
+  height: 42px;
   width: auto;
   object-fit: contain;
   flex-shrink: 0;
@@ -523,7 +523,7 @@ body {
 .leaflet-popup-close-button {
   color: var(--text2) !important;
   font-size: 20px !important;
-  padding: 8px 10px !important;
+  padding: 8px 30px !important;
   font-weight: 300 !important;
 }
 
