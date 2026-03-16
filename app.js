@@ -13,21 +13,10 @@ const fmtNum = (n) => n ? n.toLocaleString('pt-BR') : '-';
 const fmtBRL  = (n) => n ? 'R$ ' + n.toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0}) + ' mi' : '-';
 const fmtArea = (n) => n ? (n / 10000).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0}) + ' ha' : '-';
 
-/**
- * Verifica se um item possui dados reais vinculados da planilha.
- * KMLs sem vinculação geram e={nome:" - ", regional:null, ...} — todos os campos null.
- * Itens da planilha sem KML possuem regional preenchido mas p:[] e c:null.
- * A presença de e.regional é o indicador mais confiável de vinculação real.
- */
 function isLinked(item) {
   return !!(item.e && item.e.regional !== null && item.e.regional !== undefined);
 }
 
-/**
- * Retorna o melhor centroide disponível para um item:
- * 1. item.c (centroide do KML)
- * 2. centroide calculado manualmente do primeiro polígono
- */
 function getCentroid(item) {
   if (item.c) return item.c;
   if (item.p && item.p.length > 0 && item.p[0].length > 0) {
@@ -42,9 +31,7 @@ function getCentroid(item) {
 // ===== STATS =====
 document.getElementById('statsGrid').innerHTML = `
   <div class="stat-card stat-card-emp"><div class="val">230</div><div class="label">Empreendimentos</div></div>
-  <!-- <div class="stat-card stat-card-emp"><div class="val">${stats.total}</div><div class="label">Empreendimentos</div></div> -->
   <div class="stat-card"><div class="val green">122</div><div class="label">No Mapa (KML)</div></div>
-  <!-- <div class="stat-card"><div class="val green">${stats.on_map}</div><div class="label">No Mapa (KML)</div></div> -->
   <div class="stat-card"><div class="val">${fmtNum(Math.round(stats.total_units))}</div><div class="label">Total Unidades</div></div>
   <div class="stat-card"><div class="val">${fmtArea(stats.total_area)}</div><div class="label">Área Total</div></div>
   <div class="stat-card"><div class="val green">${fmtBRL(stats.total_vgv)}</div><div class="label">VGV Total</div></div>
@@ -78,6 +65,15 @@ const layerMap = {
   layerTerrain: terrainLayer,
   layerVegetation: vegetationLayer
 };
+
+// ===== LAYER GROUPS =====
+// Declarados logo após a criação do mapa, antes de qualquer função que os usa.
+// Ambos adicionados ao mapa desde o início; a função applyZoomVisibility
+// controla a visibilidade via CSS (display) para evitar piscar.
+const ZOOM_THRESHOLD = 12; // zoom < 12 → marcadores de visão geral; zoom >= 12 → polígonos
+
+const layerGroup    = L.layerGroup().addTo(map);
+const overviewGroup = L.layerGroup().addTo(map);
 
 // ===== LAYER TOGGLE LOGIC =====
 function handleLayerToggle(id) {
@@ -141,7 +137,6 @@ if (overlay) overlay.addEventListener('click', closeSidebar);
 if (sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeSidebar);
 
 // ===== FILTER CHIPS =====
-// Usa isLinked para garantir que só regionais com dados reais apareçam
 const allRegionals = [...new Set(
   items.filter(i => isLinked(i)).map(i => i.e.regional).filter(Boolean).filter(r => r !== 'None')
 )].sort();
@@ -194,8 +189,6 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
 
 // ===== POPUP CONTENT =====
 function popupContent(item) {
-  // FIX: usa isLinked() para detectar itens sem dados reais (KML sem vínculo na planilha).
-  // Antes, item.e existia mas com nome:" - " e todos os campos null, causando card vazio.
   if (!isLinked(item)) {
     return `
       <div class="popup-title">${item.n}</div>
@@ -221,8 +214,6 @@ function popupContent(item) {
 
 // ===== FILTER LOGIC =====
 function passesFilter(item) {
-  // FIX: usa isLinked() em vez de !item.e para o filtro "Vinculados",
-  // já que item.e pode existir mas com dados vazios (KML sem vínculo).
   if (somenteVinculados && !isLinked(item)) return false;
   if (activeRegionals.size > 0) {
     const r = isLinked(item) ? item.e.regional : null;
@@ -242,14 +233,103 @@ function passesFilter(item) {
 }
 
 function getColor(item) {
-  // FIX: usa isLinked() para não usar a cor de itens com regional:null
   if (isLinked(item)) return colors[item.e.regional] || '#7f8c8d';
   return '#94a3b8';
 }
 
-// ===== RENDER MAP + LIST =====
-let layerGroup = L.layerGroup().addTo(map);
+// ===== OVERVIEW MARKERS =====
 
+/**
+ * Cria um ícone HTML puro com um pino estilizado na cor da regional.
+ * Usar divIcon com HTML/CSS é mais confiável cross-browser do que SVG inline.
+ */
+function makeOverviewIcon(color) {
+  return L.divIcon({
+    className: '', // sem classe no wrapper externo para evitar reset de estilos do Leaflet
+    html: `<div class="ov-pin" style="--pin-color:${color}"></div>`,
+    iconSize:   [24, 32],
+    iconAnchor: [12, 32],
+    tooltipAnchor: [0, -34],
+  });
+}
+
+/**
+ * Reconstrói todos os marcadores de visão geral respeitando os filtros ativos.
+ */
+function buildOverviewMarkers() {
+  overviewGroup.clearLayers();
+
+  items.forEach((item) => {
+    if (!passesFilter(item)) return;
+    const centroid = getCentroid(item);
+    if (!centroid) return;
+
+    const color    = getColor(item);
+    const linked   = isLinked(item);
+    const name     = linked ? (item.e.empreendimento || item.e.nome || item.n) : item.n;
+    const city     = linked ? (item.e.cidade   || '') : '';
+    const regional = linked ? (item.e.regional || '') : '';
+    const units    = linked && item.e.total_unidades
+      ? fmtNum(item.e.total_unidades) + ' unidades'
+      : '';
+
+    const marker = L.marker(centroid, {
+      icon: makeOverviewIcon(color),
+      zIndexOffset: 200,
+    });
+
+    marker.bindTooltip(`
+      <div class="ov-tooltip">
+        ${regional ? `<span class="ov-tag" style="background:${color}">${regional}</span>` : ''}
+        <strong>${name}</strong>
+        ${city  ? `<div class="ov-city">${city}</div>`   : ''}
+        ${units ? `<div class="ov-units">${units}</div>` : ''}
+        <div class="ov-hint">Clique para aproximar</div>
+      </div>`, {
+      direction: 'top',
+      className: 'ov-tooltip-outer',
+      offset: [0, -4],
+    });
+
+    marker.on('click', () => {
+      map.flyTo(centroid, 13, { duration: 1.2, easeLinearity: 0.35 });
+    });
+
+    overviewGroup.addLayer(marker);
+  });
+}
+
+/**
+ * Controla quais camadas ficam visíveis de acordo com o zoom atual.
+ * zoom < ZOOM_THRESHOLD  → marcadores de visão geral
+ * zoom >= ZOOM_THRESHOLD → polígonos detalhados
+ *
+ * Usa getPane().style para ocultar o container inteiro de cada grupo,
+ * o que é mais simples e confiável do que iterar sobre cada layer.
+ */
+function applyZoomVisibility() {
+  const isOverview = map.getZoom() < ZOOM_THRESHOLD;
+
+  // Obtém o elemento pai dos marcadores de cada layerGroup
+  // Leaflet coloca markers em .leaflet-marker-pane e vectors em .leaflet-overlay-pane
+  // Como ambos os grupos usam o mesmo pane, precisamos usar classes CSS nos próprios elementos.
+  // A forma mais simples: setar display nos containers dos layers via eachLayer.
+
+  overviewGroup.eachLayer(l => {
+    const el = l.getElement ? l.getElement() : null;
+    if (el) el.style.display = isOverview ? '' : 'none';
+  });
+
+  layerGroup.eachLayer(l => {
+    // circleMarkers e polygons têm getElement()
+    const el = l.getElement ? l.getElement() : null;
+    if (el) el.style.display = isOverview ? 'none' : '';
+  });
+}
+
+map.on('zoomend', applyZoomVisibility);
+
+// ===== RENDER MAP + LIST =====
 function updateMap() {
   layerGroup.clearLayers();
   polygonLayers = [];
@@ -263,7 +343,7 @@ function updateMap() {
     const color = getColor(item);
     const centroid = getCentroid(item);
 
-    // --- Desenha polígonos ---
+    // Polígonos
     item.p.forEach(polyCoords => {
       const polygon = L.polygon(polyCoords, {
         color: color, weight: 2.5, opacity: 0.9,
@@ -271,35 +351,28 @@ function updateMap() {
       });
       polygon.bindPopup(popupContent(item), {maxWidth: 320});
       polygon.addTo(layerGroup);
-      // Armazena com centroide calculado para uso no click da sidebar
       polygonLayers.push({layer: polygon, item: item, idx: idx, centroid: centroid});
     });
 
-    // FIX: marcador de centroide para itens SEM polígono mas COM centroide.
-    // Também adicionado ao polygonLayers para que o click possa abrir o popup.
+    // Marcador de centroide para itens sem polígono
     if (item.p.length === 0 && centroid) {
       const marker = L.circleMarker(centroid, {
         radius: 7, color: color, fillColor: color, fillOpacity: 0.5, weight: 2.5
       });
       marker.bindPopup(popupContent(item), {maxWidth: 320});
       marker.addTo(layerGroup);
-      // FIX: antes o marker não era adicionado ao polygonLayers,
-      // impossibilitando abrir o popup pelo click na sidebar
       polygonLayers.push({layer: marker, item: item, idx: idx, centroid: centroid, isMarker: true});
     }
 
-    // --- Item da lista lateral ---
+    // Lista lateral
     const div = document.createElement('div');
     div.className = 'list-item';
 
-    // FIX: usa isLinked() para decidir o nome a exibir.
-    // Antes, item.e.empreendimento || item.e.nome retornava " - " para KMLs sem vínculo.
     const linked = isLinked(item);
     const displayName = linked ? (item.e.empreendimento || item.e.nome || item.n) : item.n;
-    const cityText   = linked ? (item.e.cidade || '') : '';
-    const regional   = linked ? (item.e.regional || '') : '';
-    const unitsText  = linked && item.e.total_unidades ? fmtNum(item.e.total_unidades) + ' un.' : '';
-    // Indica visualmente se o item não tem localização no mapa
+    const cityText    = linked ? (item.e.cidade || '') : '';
+    const regional    = linked ? (item.e.regional || '') : '';
+    const unitsText   = linked && item.e.total_unidades ? fmtNum(item.e.total_unidades) + ' un.' : '';
     const hasLocation = !!(centroid);
 
     div.innerHTML = `
@@ -313,8 +386,6 @@ function updateMap() {
       </div>`;
 
     div.onclick = () => {
-      // FIX: usa getCentroid() para garantir navegação mesmo quando
-      // item.c é null mas há polígono disponível
       if (centroid) {
         map.flyTo(centroid, 14, {duration: 1});
         const pl = polygonLayers.find(p => p.idx === idx);
@@ -329,6 +400,10 @@ function updateMap() {
   });
 
   document.getElementById('counter').textContent = visibleCount + ' de ' + items.length + ' terrenos';
+
+  // Reconstrói marcadores e aplica visibilidade após o Leaflet renderizar os elementos
+  buildOverviewMarkers();
+  setTimeout(applyZoomVisibility, 0);
 }
 
 // Initial render

@@ -23,7 +23,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 }
 
 .sidebar-logo {
-  height: 40px;        /* ajuste a altura conforme o tamanho da sua logo */
+  height: 40px;
   width: auto;
   object-fit: contain;
   flex-shrink: 0;
@@ -33,7 +33,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .sidebar-header h1{font-size:18px;font-weight:700;letter-spacing:-.3px;color:var(--text)}
 .sidebar-header .subtitle{font-size:12px;color:var(--text2);margin-top:4px;font-weight:500;text-transform:uppercase;letter-spacing:.8px}
 
-/* Mobile toggle button */
 .sidebar-toggle{display:none;background:none;border:none;padding:6px;cursor:pointer;color:var(--text2);border-radius:6px;transition:background .15s}
 .sidebar-toggle:hover{background:var(--surface2)}
 .sidebar-toggle svg{width:20px;height:20px;display:block}
@@ -46,27 +45,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .stat-card .label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-top:2px}
 
 /* ===== FILTERS ===== */
-.filters {
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--border);
-}
+.filters{padding:16px 24px;border-bottom:1px solid var(--border)}
 .filters h3{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin-bottom:10px;font-weight:600}
-.filter-chips{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-}
+.filter-chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--text2);transition:all .2s;user-select:none}
 .chip:hover{border-color:#b0b5c0}
 .chip.active{border-color:var(--accent);color:var(--accent);background:rgba(37,99,235,.06)}
 .chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
 
 /* ===== LIST ===== */
-.list-container {
-  overflow-y: visible;   /* ← era auto, muda para visible */
-  padding: 8px 12px;
-  -webkit-overflow-scrolling: touch;
-}
+.list-container{overflow-y:visible;padding:8px 12px;-webkit-overflow-scrolling:touch}
 .list-container::-webkit-scrollbar{width:4px}
 .list-container::-webkit-scrollbar-track{background:transparent}
 .list-container::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
@@ -74,18 +62,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .list-item:hover{background:var(--surface2);border-color:var(--border)}
 .list-item:active{background:rgba(37,99,235,.08)}
 .list-item.highlight{background:rgba(37,99,235,.06);border-color:var(--accent)}
-.list-item .name{
-  display: block;
-  width: 100%;
-  font-size:13px;
-  font-weight:400;
-  line-height:1.3;
-  margin-bottom:3px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  color:var(--text2)
-}
+.list-item .name{display:block;width:100%;font-size:13px;font-weight:400;line-height:1.3;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text2)}
 .list-item .meta{font-size:11px;font-weight:1000;color:var(--text);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .list-item .meta .regional-tag{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;color:#fff}
 .list-item .meta span{white-space:nowrap}
@@ -102,36 +79,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 #map{width:100%;height:100%}
 
 /* ===== MAP FOOTER ===== */
-.map-footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(6px);
-  border-top: 1px solid var(--border);
-  padding: 7px 16px;
-  font-size: 11px;
-  color: var(--text2);
-  text-align: center;
-  line-height: 1.5;
-}
-
-.map-footer strong {
-  color: var(--text);
-  font-weight: 600;
-}
-
-.map-footer a {
-  color: var(--accent);
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.map-footer a:hover {
-  text-decoration: underline;
-}
+.map-footer{position:absolute;bottom:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);border-top:1px solid var(--border);padding:7px 16px;font-size:11px;color:var(--text2);text-align:center;line-height:1.5}
+.map-footer strong{color:var(--text);font-weight:600}
+.map-footer a{color:var(--accent);text-decoration:none;font-weight:500}
+.map-footer a:hover{text-decoration:underline}
 
 /* ===== POPUP ===== */
 .leaflet-popup-content-wrapper{background:#fff!important;color:var(--text)!important;border-radius:12px!important;border:1px solid var(--border)!important;box-shadow:0 8px 32px rgba(0,0,0,.12)!important}
@@ -154,29 +105,167 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .layer-option:hover{background:var(--surface2)}
 .layer-option input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px;cursor:pointer;flex-shrink:0}
 .layer-option .layer-desc{font-size:10px;color:var(--text2);margin-top:1px}
-.layer-option .layer-icon {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  color: var(--text2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.layer-option .layer-icon svg {
-  width: 18px;
-  height: 18px;
-}
+.layer-option .layer-icon{width:20px;height:20px;flex-shrink:0;color:var(--text2);display:flex;align-items:center;justify-content:center}
+.layer-option .layer-icon svg{width:18px;height:18px}
 
 .counter{font-size:11px;color:var(--text2);padding:4px 24px 8px;font-family:'JetBrains Mono',monospace}
 
-/* ===== MOBILE MENU BUTTON (over map) ===== */
+/* ===== MOBILE MENU BUTTON ===== */
 .mobile-menu-btn{display:none;position:absolute;top:12px;right:12px;z-index:1001;background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.1);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text);gap:6px;align-items:center}
 .mobile-menu-btn svg{width:18px;height:18px}
 
 /* ===== MOBILE OVERLAY ===== */
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:999}
+
+/* ═══════════════════════════════════════════════════════════════
+   OVERVIEW MARKERS — pinos de visão geral (zoom afastado)
+   ═══════════════════════════════════════════════════════════════ */
+
+/*
+  O Leaflet renderiza o ícone dentro de um <div class="leaflet-marker-icon">.
+  Como passamos className:'' para o L.divIcon, não há classe extra interferindo.
+  O HTML gerado é: <div class="ov-pin" style="--pin-color: #c0392b"></div>
+*/
+.ov-pin {
+  /* Dimensões do pino */
+  width: 15px;
+  height: 22px;
+  position: relative;
+  cursor: pointer;
+
+  /* Forma do pino via clip-path: retângulo na parte superior + ponta triangular abaixo */
+  background: var(--pin-color, #7f8c8d);
+  border-radius: 12px 12px 4px 4px;
+  clip-path: polygon(
+    0% 0%,       /* canto superior esquerdo */
+    100% 0%,     /* canto superior direito */
+    100% 62%,    /* lado direito antes da ponta */
+    50% 100%,    /* ponta inferior */
+    0% 62%       /* lado esquerdo antes da ponta */
+  );
+
+  /* Borda branca simulada com box-shadow (clip-path corta outline/border) */
+  filter: drop-shadow(0 0 0 2px white) drop-shadow(0 3px 6px rgba(0,0,0,0.35));
+
+  /* Círculo branco interno (indicador) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Animação de entrada */
+  animation: ovPinIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+/* Círculo branco interno */
+.ov-pin::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Hover: leve crescimento e brilho */
+.ov-pin:hover,
+.leaflet-marker-icon:hover .ov-pin {
+  transform: scale(1.18) translateY(-3px);
+  filter: drop-shadow(0 0 0 2px white) drop-shadow(0 6px 12px rgba(0,0,0,0.4));
+}
+
+/* Animação de entrada com leve bounce */
+@keyframes ovPinIn {
+  0%   { opacity: 0; transform: scale(0.5) translateY(10px); }
+  100% { opacity: 1; transform: scale(1)   translateY(0);    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OVERVIEW TOOLTIP — card flutuante ao passar o mouse no pino
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Remove todos os estilos do tooltip padrão do Leaflet */
+.ov-tooltip-outer.leaflet-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  /* Remove a seta triangular */
+  margin: 0 !important;
+}
+.ov-tooltip-outer.leaflet-tooltip::before,
+.ov-tooltip-outer.leaflet-tooltip-top::before {
+  display: none !important;
+}
+
+/* Card estilizado */
+.ov-tooltip {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0,0,0,0.08);
+  padding: 10px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 155px;
+  max-width: 220px;
+  font-family: 'DM Sans', sans-serif;
+  animation: ovTooltipIn 0.14s ease-out both;
+}
+
+@keyframes ovTooltipIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* Badge colorido da regional */
+.ov-tag {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 1px;
+}
+
+/* Nome do empreendimento */
+.ov-tooltip strong {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+/* Cidade */
+.ov-city {
+  font-size: 11px;
+  color: var(--text2);
+}
+
+/* Unidades */
+.ov-units {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent2);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Hint de clique */
+.ov-hint {
+  font-size: 10px;
+  color: var(--accent);
+  font-weight: 500;
+  margin-top: 3px;
+  opacity: 0.85;
+}
 
 /* ===== RESPONSIVE — TABLET ===== */
 @media(max-width:900px){
@@ -188,7 +277,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 @media(max-width:768px){
   body{flex-direction:column;position:relative}
 
-  /* Sidebar becomes a slide-over drawer */
   .sidebar{
     position:fixed;top:0;left:0;bottom:0;
     width:85vw;max-width:360px;
@@ -201,26 +289,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   .sidebar-overlay.visible{display:block;z-index:1099}
   .sidebar-toggle{display:block}
 
-  /* Map takes full screen */
   .map-wrap{width:100%;height:100vh;height:100dvh}
-
-  /* Show mobile menu button */
   .mobile-menu-btn{display:flex}
 
-  /* Smaller layer panel */
   .layer-panel{top:8px;left:8px;min-width:180px;max-width:calc(100vw - 80px)}
   .layer-panel-header{padding:10px 12px;font-size:12px}
   .layer-option{padding:6px 4px;font-size:11px}
 
-  /* Popup responsive */
   .leaflet-popup-content-wrapper{max-width:85vw!important}
   .popup-grid{gap:4px 10px}
   .popup-grid .pg-val{font-size:12px}
 
-  /* Search input larger touch target */
   .search-box input{padding:12px;font-size:15px}
 
-  /* Stats smaller */
   .stat-card .val{font-size:16px}
   .stat-card .label{font-size:9px}
   .stats-grid{gap:6px;padding:12px 16px}
@@ -229,6 +310,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   .search-box{padding:10px 16px}
   .counter{padding:4px 16px 6px}
   .list-container{padding:6px 8px}
+
+  /* Tooltip menor em telas pequenas */
+  .ov-tooltip{min-width:130px;max-width:185px;padding:8px 10px;gap:3px}
+  .ov-tooltip strong{font-size:11px}
 }
 
 /* ===== VERY SMALL SCREENS ===== */
